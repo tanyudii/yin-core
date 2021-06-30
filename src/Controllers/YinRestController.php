@@ -2,6 +2,7 @@
 
 namespace tanyudii\YinCore\Controllers;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,8 +16,6 @@ use tanyudii\YinCore\Contracts\WithRelationRequest;
 use tanyudii\YinCore\Contracts\WithSimplePaginate;
 use tanyudii\YinCore\Contracts\WithSortableRequest;
 use tanyudii\YinCore\Facades\YinResourceService;
-use tanyudii\YinCore\Scopes\WithRelation;
-use tanyudii\YinCore\Scopes\WithSortable;
 
 trait YinRestController
 {
@@ -69,20 +68,31 @@ trait YinRestController
         $qb = $this->repository->query();
 
         if ($this->repository instanceof WithRelationRequest) {
-            $qb = $qb->withGlobalScope(...apply_scope(WithRelation::class));
+            $qb = $qb->with(arr_strict($request->get("with", [])));
         }
 
         if ($this->repository instanceof WithSortableRequest) {
-            $qb = $qb->withGlobalScope(...apply_scope(WithSortable::class));
+            if ($orderBy = $request->get("order_by")) {
+                $sorted = in_array(strtolower($request->get("sorted_by")), [
+                    "desc",
+                    "descending",
+                ]) ? "desc" : "asc";
+
+                $qb = $qb->orderBy($orderBy, $sorted);
+            }
         }
 
         if ($this->repository instanceof WithDefaultOrderCreatedAt) {
-            $qb = $qb->orderBy(
-                $this->repository->getTable() . ".created_at",
-                $this->repository instanceof WithDefaultOrderDesc
-                    ? "DESC"
-                    : "ASC"
-            );
+            if ($this->repository instanceof WithSortableRequest && $request->has('order_by')) {
+                //nothing to do here
+            } else {
+                $qb = $qb->orderBy(
+                    $this->repository->getTable() . ".created_at",
+                    $this->repository instanceof WithDefaultOrderDesc
+                        ? "DESC"
+                        : "ASC"
+                );
+            }
         }
 
         $this->applyScopeIndex($request, $qb);
@@ -107,7 +117,7 @@ trait YinRestController
         $qb = $this->repository->query();
 
         if ($this->repository instanceof WithRelationRequest) {
-            $qb = $qb->withGlobalScope(...apply_scope(WithRelation::class));
+            $qb = $qb->with(arr_strict($request->get("with", [])));
         }
 
         $this->applyScopeShow($request, $qb);
@@ -120,6 +130,7 @@ trait YinRestController
     /**
      * @param Request $request
      * @return JsonResponse
+     * @throws Exception
      */
     public function destroy(Request $request)
     {
@@ -130,7 +141,9 @@ trait YinRestController
         $data = $qb->where("id", $request->route("id"))->firstOrFail();
 
         if ($data instanceof WithDeletePolicy) {
-            $this->authorize(__FUNCTION__, $data);
+            if (method_exists($this, 'authorize')) {
+                $this->authorize(__FUNCTION__, $data);
+            }
         }
 
         $data->delete();
