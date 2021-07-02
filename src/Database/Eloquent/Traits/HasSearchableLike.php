@@ -2,7 +2,7 @@
 
 namespace tanyudii\YinCore\Database\Eloquent\Traits;
 
-trait WithSearchableLike
+trait HasSearchableLike
 {
     /**
      * @param $query
