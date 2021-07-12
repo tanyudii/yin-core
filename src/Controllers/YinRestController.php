@@ -8,9 +8,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Response;
 use tanyudii\YinCore\Contracts\WithDefaultOrderCreatedAt;
 use tanyudii\YinCore\Contracts\WithDefaultOrderDesc;
-use tanyudii\YinCore\Contracts\WithDeletePolicy;
 use tanyudii\YinCore\Contracts\WithPaginate;
 use tanyudii\YinCore\Contracts\WithRelationRequest;
 use tanyudii\YinCore\Contracts\WithSimplePaginate;
@@ -21,7 +21,7 @@ use tanyudii\YinCore\Scopes\WithSortable;
 
 trait YinRestController
 {
-    use Scope;
+    use Observer, Scope;
 
     /**
      * @var Model
@@ -131,38 +131,16 @@ trait YinRestController
 
         $data = $qb->where("id", $request->route("id"))->firstOrFail();
 
-        if ($data instanceof WithDeletePolicy) {
-            $this->authorize(__FUNCTION__, $data);
-        }
-
         $this->beforeDestroy($request, $data);
 
         $data->delete();
 
         $this->afterDestroy($request, $data);
 
-        return response()->json([
+        return Response::json([
             "success" => true,
             "message" => "Successfully delete data.",
             "data" => $data,
         ]);
-    }
-
-    /**
-     * @param Request $request
-     * @param Model $model
-     */
-    public function beforeDestroy(Request $request, Model $model)
-    {
-        //
-    }
-
-    /**
-     * @param Request $request
-     * @param Model $model
-     */
-    public function afterDestroy(Request $request, Model $model)
-    {
-        //
     }
 }

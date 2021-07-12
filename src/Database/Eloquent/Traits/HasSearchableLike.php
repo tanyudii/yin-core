@@ -9,7 +9,7 @@ trait HasSearchableLike
      * @param $search
      * @param array $columns
      */
-    public function scopeSearchLike($query, $search, $columns = [])
+    public function scopeSearchLike($query, $search, array $columns = []): void
     {
         $query->where(function ($query) use ($search, $columns) {
             if (!empty($search)) {
@@ -22,5 +22,13 @@ trait HasSearchableLike
                 }
             }
         });
+    }
+
+    /**
+     * @return array
+     */
+    public function getDefaultSearchableLike(): array
+    {
+        return [];
     }
 }

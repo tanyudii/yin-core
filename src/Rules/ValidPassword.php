@@ -4,6 +4,7 @@ namespace tanyudii\YinCore\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Lang;
 
 class ValidPassword implements Rule
 {
@@ -38,6 +39,6 @@ class ValidPassword implements Rule
      */
     public function message()
     {
-        return __("The :attribute is incorrect.");
+        return Lang::get("The :attribute is incorrect.");
     }
 }

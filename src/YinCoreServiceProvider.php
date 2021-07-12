@@ -16,11 +16,11 @@ class YinCoreServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind("yin-resource-service", function () {
-            return new YinResourceService();
+            return new YinResourceService;
         });
 
         $this->app->bind("yin-request-service", function () {
-            return new YinRequestService();
+            return new YinRequestService;
         });
     }
 
