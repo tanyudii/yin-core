@@ -2,6 +2,7 @@
 
 namespace tanyudii\YinCore\Controllers;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -120,6 +121,7 @@ trait YinRestController
     /**
      * @param Request $request
      * @return JsonResponse
+     * @throws Exception
      */
     public function destroy(Request $request)
     {
@@ -133,12 +135,34 @@ trait YinRestController
             $this->authorize(__FUNCTION__, $data);
         }
 
+        $this->beforeDestroy($request, $data);
+
         $data->delete();
+
+        $this->afterDestroy($request, $data);
 
         return response()->json([
             "success" => true,
             "message" => "Successfully delete data.",
             "data" => $data,
         ]);
+    }
+
+    /**
+     * @param Request $request
+     * @param Model $model
+     */
+    public function beforeDestroy(Request $request, Model $model)
+    {
+        //
+    }
+
+    /**
+     * @param Request $request
+     * @param Model $model
+     */
+    public function afterDestroy(Request $request, Model $model)
+    {
+        //
     }
 }
