@@ -11,14 +11,16 @@ trait HasSearchableLike
      */
     public function scopeSearchLike($query, $search, $columns = [])
     {
-        if (!empty($search)) {
-            foreach ($columns as $index => $column) {
-                if ($index == 0) {
-                    $query->where($column, "like", "%$search%");
-                } else {
-                    $query->orWhere($column, "like", "%$search%");
+        $query->where(function ($query) use ($search, $columns) {
+            if (!empty($search)) {
+                foreach ($columns as $index => $column) {
+                    if ($index == 0) {
+                        $query->where($column, "like", "%$search%");
+                    } else {
+                        $query->orWhere($column, "like", "%$search%");
+                    }
                 }
             }
-        }
+        });
     }
 }
