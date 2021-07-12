@@ -29,7 +29,6 @@ if (!function_exists('apply_scope')) {
     }
 }
 
-
 if (!function_exists('builder_to_sql')) {
     /**
      * The helper for build sql query from builder to string
@@ -40,5 +39,22 @@ if (!function_exists('builder_to_sql')) {
     function builder_to_sql($builder): string
     {
         return vsprintf(str_replace(["?"], ['\'%s\''], $builder->toSql()), $builder->getBindings());
+    }
+}
+
+if (!function_exists('is_assoc')) {
+    /**
+     * The helper for validate array is associative or sequential
+     *
+     * @param array $arr
+     * @return bool
+     */
+    function is_assoc(array $arr): bool
+    {
+        if (array() === $arr) {
+            return false;
+        }
+
+        return array_keys($arr) !== range(0, count($arr) - 1);
     }
 }
