@@ -3,13 +3,13 @@
 namespace tanyudii\YinCore\Controllers;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 
 trait Observer
 {
     /**
      * @param Request $request
-     * @param Mo
+     * @param Model $model
      * del $model
      */
     public function beforeDestroy(Request $request, Model $model)
