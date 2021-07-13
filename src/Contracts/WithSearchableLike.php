@@ -7,9 +7,9 @@ interface WithSearchableLike
     /**
      * @param $query
      * @param $search
-     * @param $columns
+     * @param array $columns
      */
-    public function scopeSearchLike($query, $search, $columns): void;
+    public function scopeSearchLike($query, $search, array $columns = []): void;
 
     /**
      * @return array
