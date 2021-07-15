@@ -77,7 +77,7 @@ trait YinRestController
             $qb = $qb->withGlobalScope(...apply_scope(WithSortable::class));
         }
 
-        if ($this->repository instanceof WithDefaultOrderCreatedAt) {
+        if ($this->repository instanceof WithDefaultOrderCreatedAt && !$this->repository instanceof WithSortableRequest || !$request->has('order_by')) {
             $qb = $qb->orderBy(
                 $this->repository->getTable() . ".created_at",
                 $this->repository instanceof WithDefaultOrderDesc
